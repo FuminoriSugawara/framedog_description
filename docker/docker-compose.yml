@@ -1,0 +1,33 @@
+# RViz + joint_state_publisher_gui for framedog_description.
+#
+# On the host (Linux/X11), before `up`, allow the container to use your display:
+#   xhost +local:root
+# then:
+#   docker compose -f docker/docker-compose.yml up --build
+#
+# Show both legs side by side instead of the whole robot:
+#   docker compose ... run --rm framedog_rviz \
+#     ros2 launch framedog_description display.launch.py model:=legs_display.urdf.xacro
+
+services:
+  framedog_rviz:
+    build:
+      context: .
+      args:
+        ROS_DISTRO: ${ROS_DISTRO:-jazzy}
+        BASE_IMAGE: ${BASE_IMAGE:-osrf/ros:jazzy-desktop-full}
+    image: framedog_description:${ROS_DISTRO:-jazzy}
+    container_name: framedog_rviz
+    network_mode: host
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
+      - ROS_DISTRO=${ROS_DISTRO:-jazzy}
+      # set to 1 if RViz fails to render (forces software OpenGL):
+      - LIBGL_ALWAYS_SOFTWARE=${LIBGL_ALWAYS_SOFTWARE:-0}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # mount the description package (this folder's parent) as the ROS package source:
+      - ../:/ws/src/framedog_description:rw
+    stdin_open: true
+    tty: true

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- Display both legs side by side for RViz / joint_state_publisher_gui checking. -->
+<robot name="framedog_legs" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find framedog_description)/urdf/leg.xacro"/>
+
+  <link name="base_link"/>
+
+  <xacro:framedog_leg prefix="left" side="left" parent="base_link"
+                      mesh_pkg="package://framedog_description/meshes">
+    <origin xyz="0 0.15 0" rpy="0 0 0"/>
+  </xacro:framedog_leg>
+
+  <xacro:framedog_leg prefix="right" side="right" parent="base_link"
+                      mesh_pkg="package://framedog_description/meshes">
+    <origin xyz="0 -0.15 0" rpy="0 0 0"/>
+  </xacro:framedog_leg>
+</robot>
