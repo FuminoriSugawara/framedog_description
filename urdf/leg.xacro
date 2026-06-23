@@ -150,7 +150,9 @@
       <origin xyz="${L_pitch_xyz if L else R_pitch_xyz}" rpy="${(L_pitchflip_rpy if L else R_pitchflip_rpy) if thigh_zflip else (L_pitch_rpy if L else R_pitch_rpy)}"/>
       <parent link="${prefix}_pitch_holder_link"/><child link="${prefix}_thigh_link"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${radians(-90)}" upper="${radians(90)}" effort="17" velocity="20"/>
+      <!-- upper raised 90->110deg so the measured prone pitch (+100deg, reachable
+           on real hardware) is inside the active limit; lower stays -90deg. -->
+      <limit lower="${radians(-90)}" upper="${radians(110)}" effort="17" velocity="20"/>
     </joint>
 
     <!-- active #3 (knee motor): thigh -> knee crank -->
