@@ -15,22 +15,22 @@
       <geometry><mesh filename="$(arg mesh_pkg)/body/body.stl" scale="0.001 0.001 0.001"/></geometry>
     </collision>
     <inertial>
-      <origin xyz="0 6.7399886e-05 0" rpy="0 0 0"/>
-      <mass value="3.1289918"/>
-      <inertia ixx="0.017495908" ixy="0" ixz="0" iyy="0.042068236" iyz="0" izz="0.051887499"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="3.7216718"/>
+      <inertia ixx="0.015356305" ixy="0" ixz="0" iyy="0.076028916" iyz="0" izz="0.082577223"/>
     </inertial>
   </link>
 
   <xacro:framedog_leg prefix="lf" side="left" parent="base_link" mesh_pkg="$(arg mesh_pkg)" thigh_zflip="false">
-    <origin xyz="0.1475 0.08 0" rpy="0 0 0"/>
+    <origin xyz="0.1475 0.05 0" rpy="0 0 0"/>
   </xacro:framedog_leg>
   <xacro:framedog_leg prefix="rf" side="right" parent="base_link" mesh_pkg="$(arg mesh_pkg)" thigh_zflip="false">
-    <origin xyz="0.1475 -0.08 0" rpy="0 0 0"/>
+    <origin xyz="0.1475 -0.05 0" rpy="0 0 0"/>
   </xacro:framedog_leg>
   <xacro:framedog_leg prefix="lr" side="left" parent="base_link" mesh_pkg="$(arg mesh_pkg)" thigh_zflip="true">
-    <origin xyz="-0.1475 0.08 0" rpy="0 3.1415927 0"/>
+    <origin xyz="-0.1475 0.05 0" rpy="0 3.1415927 0"/>
   </xacro:framedog_leg>
   <xacro:framedog_leg prefix="rr" side="right" parent="base_link" mesh_pkg="$(arg mesh_pkg)" thigh_zflip="true">
-    <origin xyz="-0.1475 -0.08 0" rpy="0 3.1415927 0"/>
+    <origin xyz="-0.1475 -0.05 0" rpy="0 3.1415927 0"/>
   </xacro:framedog_leg>
 </robot>
