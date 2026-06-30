@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!--
+  Intel RealSense D435i camera + mount macro.
+  Mesh and inertial values come from the with_camera Fusion export.
+
+  Frame names match what realsense2_camera (4.58.1) publishes for camera_name=d435i:
+  d435i_link is the camera base; per-stream optical frames are
+  d435i_<stream>_optical_frame; the united IMU frame is d435i_imu_optical_frame.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    d435i_camera: one D435i camera bolted to `parent` at `*origin`.
+      parent         : link the camera is mounted on
+      *origin        : FIXED mount transform (parent -> d435i_link); keep rpy=0
+                       so the optical frames stay REP-103 correct
+      mesh_pkg       : base URI for meshes
+      optical_frames : true  -> URDF supplies the REP-103 optical frame subtree
+                       false -> only d435i_link (the live camera node supplies the
+                                optical frames at runtime; avoids double TF publish)
+  -->
+  <xacro:macro name="d435i_camera"
+               params="parent *origin
+                       mesh_pkg:=package://framedog_description/meshes
+                       optical_frames:=true">
+
+    <!-- Physical camera link: mesh for display, box for stable convex collision. -->
+    <link name="d435i_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_pkg}/sensors/d435i_assem.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0.008505 0 -0.014995" rpy="0 0 0"/>
+        <geometry><box size="0.03303 0.10002 0.05503"/></geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0.006705148 0.001639902 -0.008966958" rpy="0 0 0"/>
+        <mass value="0.13620859"/>
+        <inertia ixx="0.0001272638" ixy="-4.009e-07" ixz="-4.8685e-06"
+                 iyy="3.71598e-05" iyz="-2.00294e-06" izz="0.0001167430"/>
+      </inertial>
+    </link>
+
+    <joint name="d435i_mount_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="d435i_link"/>
+    </joint>
+
+    <!-- REP-103 optical frames. Only when this URDF is the supplier (display / sim);
+         on real hardware the realsense2_camera node publishes these instead. -->
+    <xacro:if value="${optical_frames}">
+      <!-- Per-stream: keep realsense's true link -> <stream>_frame -> optical chain.
+           The <stream>_frame is coincident with d435i_link; the optical frame applies
+           the REP-103 body->optical rotation (rpy = -90, 0, -90 deg). -->
+      <xacro:macro name="d435i_stream_optical" params="stream">
+        <link name="d435i_${stream}_frame"/>
+        <joint name="d435i_${stream}_joint" type="fixed">
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <parent link="d435i_link"/>
+          <child link="d435i_${stream}_frame"/>
+        </joint>
+        <link name="d435i_${stream}_optical_frame"/>
+        <joint name="d435i_${stream}_optical_joint" type="fixed">
+          <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+          <parent link="d435i_${stream}_frame"/>
+          <child link="d435i_${stream}_optical_frame"/>
+        </joint>
+      </xacro:macro>
+
+      <xacro:d435i_stream_optical stream="color"/>
+      <xacro:d435i_stream_optical stream="depth"/>
+      <xacro:d435i_stream_optical stream="infra1"/>
+      <xacro:d435i_stream_optical stream="infra2"/>
+
+      <!-- United IMU (unite_imu_method=2): /realsense/d435i/imu uses this frame_id.
+           Attaches directly to d435i_link (no intermediate frame). -->
+      <link name="d435i_imu_optical_frame"/>
+      <joint name="d435i_imu_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+        <parent link="d435i_link"/>
+        <child link="d435i_imu_optical_frame"/>
+      </joint>
+    </xacro:if>
+
+  </xacro:macro>
+</robot>

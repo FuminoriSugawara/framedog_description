@@ -11,9 +11,12 @@ urdf/
   leg.xacro                 leg macro (3-DOF; knee 4-bar via mimic joints)
   framedog.urdf.xacro       full robot: body + 4 legs (12-DOF)
   legs_display.urdf.xacro   both legs side by side (preview)
+  d435i.xacro               D435i camera macro (link + REP-103 optical frames)
+  framedog_with_sensors.urdf.xacro  full robot + sensors (D435i camera; display / check_urdf)
 meshes/
   body/body.stl
   leg/*.stl                 8 leg meshes (6 shared L/R + per-side knee cranks)
+  sensors/d435i_assem.stl   D435i camera + mount mesh
 launch/display.launch.py    robot_state_publisher + joint_state_publisher_gui + rviz2
 rviz/framedog.rviz
 docker/                     containerised RViz preview (no host ROS needed)
@@ -39,6 +42,9 @@ RViz opens with `joint_state_publisher_gui` sliders for the 12 active joints
 colcon build --packages-select framedog_description
 source install/setup.bash
 ros2 launch framedog_description display.launch.py
+
+# with the D435i camera (full robot + camera link and REP-103 optical frames):
+ros2 launch framedog_description display.launch.py model:=framedog_with_sensors.urdf.xacro
 ```
 
 ## License

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!--
+  FrameDog (body + 4 legs) composed with its onboard sensors.
+  Standalone display / check_urdf model.
+
+  Each sensor is added via its own macro and mounted on the robot at its export
+  occurrence pose. camera_optical_frames defaults to true here (display/sim: this
+  URDF supplies the optical frames); bring-up overrides it to false so the live
+  sensor driver node is the sole supplier on hardware (no double TF publish).
+-->
+<robot name="framedog" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="camera_optical_frames" default="true"/>
+
+  <xacro:include filename="$(find framedog_description)/urdf/framedog.urdf.xacro"/>
+  <xacro:include filename="$(find framedog_description)/urdf/d435i.xacro"/>
+
+  <xacro:d435i_camera parent="base_link" optical_frames="$(arg camera_optical_frames)">
+    <origin xyz="0.248 0 0.0375" rpy="0 0 0"/>
+  </xacro:d435i_camera>
+</robot>
